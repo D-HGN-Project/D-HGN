@@ -143,6 +143,13 @@ class DHGNDataLoader:
         dynamic_graphs[dynamic_graphs > 10] = 0
         print(f"  → 已替换为0, 当前范围: [{dynamic_graphs.min():.4f}, {dynamic_graphs.max():.4f}]")
 
+        non_imaging = np.array(all_non_imaging, dtype=np.float32)
+        if len(non_imaging) > 0:
+            age_mean = np.mean(non_imaging[:, 0])
+            age_std = np.std(non_imaging[:, 0]) + 1e-6
+            non_imaging[:, 0] = (non_imaging[:, 0] - age_mean) / age_std
+        self.non_imaging_data = non_imaging
+
         # 根据模式选择返回SC矩阵或非成像数据
         if use_sc and all_sc:
             sc_matrices = np.array(all_sc)
@@ -154,11 +161,6 @@ class DHGNDataLoader:
             print(f"  SC矩阵形状: {sc_matrices.shape}")
             modal_data = sc_matrices
         else:
-            non_imaging = np.array(all_non_imaging, dtype=np.float32)
-            # Age归一化
-            age_mean = np.mean(non_imaging[:, 0])
-            age_std = np.std(non_imaging[:, 0]) + 1e-6
-            non_imaging[:, 0] = (non_imaging[:, 0] - age_mean) / age_std
             print(f"  使用非成像数据 (年龄+性别)")
             modal_data = non_imaging
 

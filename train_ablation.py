@@ -61,8 +61,8 @@ class AblationTrainer:
         self.y = torch.tensor([le[l] for l in labels_list], dtype=torch.long)
         self.X = self.dynamic_fc
         
-        # 创建假的临床数据 (用于 w/o SC 变体)
-        self.clin_tensor_list = torch.zeros(len(self.subjects), 2)
+        # Use real demographic data (age + sex) for the w/o SC variant.
+        self.clin_tensor_list = torch.tensor(self.loader.non_imaging_data, dtype=torch.float32)
         
         print(f"✅ 数据准备完毕: X={self.X.shape}, y={self.y.shape}")
         
